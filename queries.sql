@@ -46,3 +46,15 @@ left join employees as e
 on e.employee_id = s.sales_person_id
 group by extract(ISODOW FROM s.sale_date), day_of_week, seller
 order by extract(ISODOW FROM s.sale_date), seller;
+
+--выводит количество покупателей в возрастных группах
+select
+case
+	when age between 16 and 25 then '16-25'
+	when age between 26 and 40 then '26-40'
+	else '40+'
+end as age_category,
+COUNT(age) as age_count
+from customers
+group by age_category
+order by age_category;
