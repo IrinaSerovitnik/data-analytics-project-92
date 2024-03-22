@@ -69,3 +69,26 @@ left join products as p
 on s.product_id = p.product_id
 group by selling_month
 order by selling_month;
+
+--выводит данные о покупателях, первая покупка которых была в ходе проведения акций (акционные товары отпускали со стоимостью равной 0)
+select
+CONCAT(c.first_name, ' ', c.last_name),
+s2.sale_date,
+CONCAT(e.first_name, ' ', e.last_name)
+from (
+select 
+s.customer_id,
+s.sale_date,
+s.sales_person_id,
+p.price,
+row_number () over (partition by s.customer_id order by s.sale_date) as rn
+from sales as s
+left join products as p
+on s.product_id = p.product_id
+) as s2
+left join customers as c
+on s2.customer_id = c.customer_id
+left join employees as e
+on s2.sales_person_id = e.employee_id 
+where rn = 1
+and price = 0;
