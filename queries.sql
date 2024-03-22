@@ -72,9 +72,9 @@ order by selling_month;
 
 --выводит данные о покупателях, первая покупка которых была в ходе проведения акций (акционные товары отпускали со стоимостью равной 0)
 select
-CONCAT(c.first_name, ' ', c.last_name),
+CONCAT(c.first_name, ' ', c.last_name) as customer,
 s2.sale_date,
-CONCAT(e.first_name, ' ', e.last_name)
+CONCAT(e.first_name, ' ', e.last_name) as seller
 from (
 select 
 s.customer_id,
@@ -91,4 +91,5 @@ on s2.customer_id = c.customer_id
 left join employees as e
 on s2.sales_person_id = e.employee_id 
 where rn = 1
-and price = 0;
+and price = 0
+order by s2.customer_id;
