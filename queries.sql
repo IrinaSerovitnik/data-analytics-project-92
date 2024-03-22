@@ -58,3 +58,14 @@ COUNT(age) as age_count
 from customers
 group by age_category
 order by age_category;
+
+--выводит данные по количеству уникальных покупателей и выручке, которую они принесли
+select
+TO_CHAR(s.sale_date, 'YYYY-MM') as selling_month,
+COUNT(distinct s.customer_id) as total_customers,
+FLOOR(SUM(s.quantity*p.price)) as income
+from sales as s
+left join products as p
+on s.product_id = p.product_id
+group by selling_month
+order by selling_month;
