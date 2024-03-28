@@ -37,7 +37,7 @@ order by average_income;
 --выводит информацию о выручке по дням недели
 select
 CONCAT(e.first_name, ' ', e.last_name) as seller,
-TO_CHAR(s.sale_date, 'Day') as day_of_week,
+TO_CHAR(s.sale_date, 'day') as day_of_week,
 FLOOR(SUM(p.price*s.quantity)) as income
 from sales as s
 left join products as p
