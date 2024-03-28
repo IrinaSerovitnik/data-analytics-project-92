@@ -6,11 +6,11 @@ select
     CONCAT(e.first_name, ' ', e.last_name) as seller,
     COUNT(s.sales_person_id) as operations,
     FLOOR(SUM(p.price * s.quantity)) as income
-from sales as s
+from employees as e
+right join sales as s
+    on e.employee_id = s.sales_person_id
 left join products as p
     on s.product_id = p.product_id
-left join employees as e
-    on e.employee_id = s.sales_person_id
 group by CONCAT(e.first_name, ' ', e.last_name)
 order by SUM(p.price * s.quantity) desc
 limit 10;
@@ -85,7 +85,8 @@ from (
         s.sale_date,
         s.sales_person_id,
         p.price,
-        ROW_NUMBER() over (partition by s.customer_id order by s.sale_date) as rn
+        ROW_NUMBER() over (partition by s.customer_id order by s.sale_date)
+        as rn
     from sales as s
     left join products as p
         on s.product_id = p.product_id
@@ -94,6 +95,7 @@ left join customers as c
     on s2.customer_id = c.customer_id
 left join employees as e
     on s2.sales_person_id = e.employee_id
-where S2.rn = 1
-    and S2.price = 0
+where
+    s2.rn = 1
+    and s2.price = 0
 order by s2.customer_id;
