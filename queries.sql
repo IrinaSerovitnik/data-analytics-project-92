@@ -7,7 +7,7 @@ select
     COUNT(s.sales_person_id) as operations,
     FLOOR(SUM(p.price * s.quantity)) as income
 from employees as e
-right join sales as s
+left join sales as s
     on e.employee_id = s.sales_person_id
 left join products as p
     on s.product_id = p.product_id
@@ -21,11 +21,11 @@ with sellers as (
     select
         CONCAT(e.first_name, ' ', e.last_name) as seller,
         FLOOR(AVG(p.price * s.quantity)) as average_income
-    from sales as s
-    left join products as p
-        on s.product_id = p.product_id
-    left join employees as e
+    from employees as e
+    left join sales as s
         on e.employee_id = s.sales_person_id
+    left join products as p
+        on p.product_id = s.product_id
     group by CONCAT(e.first_name, ' ', e.last_name)
 )
 
@@ -41,11 +41,11 @@ select
     CONCAT(e.first_name, ' ', e.last_name) as seller,
     TO_CHAR(s.sale_date, 'day') as day_of_week,
     FLOOR(SUM(p.price * s.quantity)) as income
-from sales as s
+from employees as e
+left join sales as s
+    on e.employee_id = s.sales_person_id
 left join products as p
     on s.product_id = p.product_id
-left join employees as e
-    on e.employee_id = s.sales_person_id
 group by EXTRACT(isodow from s.sale_date), day_of_week, seller
 order by EXTRACT(isodow from s.sale_date), seller;
 
