@@ -19,13 +19,13 @@ limit 10;
 --за сделку по всем продавцам
 with sellers as (
     select
-        CONCAT(e.first_name, ' ', e.last_name) as seller,
-        FLOOR(AVG(p.price * s.quantity)) as average_income
-    from employees as e
+        FLOOR(AVG(p.price * s.quantity)) as average_income,
+        CONCAT(e.first_name, ' ', e.last_name) as seller
+    from products as p
     left join sales as s
-        on e.employee_id = s.sales_person_id
-    left join products as p
         on p.product_id = s.product_id
+    left join employees as e
+        on e.employee_id = s.sales_person_id
     group by CONCAT(e.first_name, ' ', e.last_name)
 )
 
