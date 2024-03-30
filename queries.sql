@@ -82,7 +82,7 @@ with s2 as (
         s.sales_person_id,
         p.price,
         ROW_NUMBER() over (partition by s.customer_id order by s.sale_date)
-            as rn,
+        as rn,
         CONCAT(c.first_name, ' ', c.last_name) as customer,
         CONCAT(e.first_name, ' ', e.last_name) as seller
     from sales as s
