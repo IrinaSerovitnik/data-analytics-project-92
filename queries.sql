@@ -25,7 +25,7 @@ with sellers as (
     left join sales as s
         on p.product_id = s.product_id
     left join employees as e
-        on e.employee_id = s.sales_person_id
+        on s.sales_person_id = e.employee_id
     group by CONCAT(e.first_name, ' ', e.last_name)
 )
 
@@ -75,27 +75,30 @@ order by selling_month;
 
 --выводит данные о покупателях, первая покупка которых была
 --в ходе проведения акций (акционные товары отпускали со стоимостью равной 0)
-select
-    CONCAT(c.first_name, ' ', c.last_name) as customer,
-    s2.sale_date,
-    CONCAT(e.first_name, ' ', e.last_name) as seller
-from (
+with s2 as (
     select
         s.customer_id,
         s.sale_date,
         s.sales_person_id,
         p.price,
         ROW_NUMBER() over (partition by s.customer_id order by s.sale_date)
-        as rn
+            as rn,
+        CONCAT(c.first_name, ' ', c.last_name) as customer,
+        CONCAT(e.first_name, ' ', e.last_name) as seller
     from sales as s
     left join products as p
         on s.product_id = p.product_id
-) as s2
-left join customers as c
-    on s2.customer_id = c.customer_id
-left join employees as e
-    on s2.sales_person_id = e.employee_id
+    left join customers as c
+        on s.customer_id = c.customer_id
+    left join employees as e
+        on s.sales_person_id = e.employee_id
+)
+
+select
+    s2.customer,
+    s2.sale_date,
+    s2.seller
+from s2
 where
     s2.rn = 1
-    and s2.price = 0
-order by s2.customer_id;
+    and s2.price = 0;
